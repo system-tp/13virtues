@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>１３の德目 - ログイン</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Antique+Soft&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#3a7afe;
+  --accent-dark:#2f64d3;
+  --bg:#eef3f9;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --radius:14px;
+}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:"Noto Sans JP","Segoe UI",system-ui;
+  background:var(--bg);
+  color:#1a1a1a;
+}
+.container{
+  max-width:420px;
+  margin:0 auto;
+  padding:40px 20px;
+}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:24px 28px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
+  border:1px solid #e6ebf1;
+  margin-top:40px;
+}
+header{
+  text-align:center;
+  font-family:'Zen Antique Soft', serif;
+  margin-bottom:24px;
+  position:relative;
+}
+label{
+  display:block;
+  margin-top:20px;
+  font-weight:700;
+  font-size:15px;
+  color:#333;
+}
+input[type=text], input[type=password]{
+  width:100%;
+  padding:12px 14px;
+  font-size:15px;
+  border-radius:var(--radius);
+  border:1px solid #d4dbe4;
+  background:#fafcff;
+  margin-top:6px;
+  box-sizing:border-box;
+}
+.btn{
+  width:100%;
+  margin-top:28px;
+  padding:14px 22px;
+  font-size:16px;
+  font-weight:700;
+  border-radius:var(--radius);
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(58,122,254,0.25);
+  transition:0.2s;
+}
+.btn:hover{ background:var(--accent-dark); }
+.error{
+  margin-top:20px;
+  color:#d9534f;
+  font-weight:700;
+  text-align:center;
+}
+
+#header-date {
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
+.theme-block {
+  margin-top: 20px;
+  padding-left: 12px;
+  border-left: 2px solid var(--accent); /* ← 少し細く */
+  text-align: left; /* 左寄せ */
+}
+
+.theme-label {
+  font-size: 14px;
+  color: #555;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.theme-content {
+  margin-top: 4px;
+  font-size: 48px;
+  font-family: "Zen Antique Soft", serif;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #222;
+
+  white-space: pre-line;   /* 改行を反映 */
+  padding-left: 0.5em;       /* ← 全行をインデント */
+}
+
+
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header style="text-align:left; font-family:'Zen Antique Soft', serif; margin-bottom:24px; position:relative;">
+
+    <!-- 上段 -->
+    <div style="position:relative; display:inline-block;">
+      <span style="font-size:100px; font-weight:900; line-height:1; color:var(--accent);">13</span>
+      <span style="font-size:12px; color:var(--subtitle-color, #5f0404); position:absolute; top:16px; left:100%; margin-left:12px; white-space:nowrap;">
+        コーチング型（質問型）朝礼
+      </span>
+    </div>
+
+    <!-- 下段 -->
+    <div style="display:inline-flex; align-items:baseline; justify-content:flex-start; gap:4px; font-weight:900; color:var(--accent); margin-top:-10px;">
+      <span style="font-size:40px;">の</span>
+      <span style="font-size:60px; line-height:1;"> 德目</span>
+    </div>
+
+    <!-- 日付表示：タイトル下 -->
+    <div id="header-date" style="margin-top:8px; font-size:20px; color:#6b7280;"></div>
+
+    <!-- 今月のテーマ表示 -->
+    <div class="theme-block">
+      <div class="theme-label">今月のテーマ</div>
+      <div class="theme-content">{{ monthly_theme }}</div>
+    </div>
+
+  </header>
+
+  <div class="card">
+    <form method="post">
+      <label>ユーザーID</label>
+      <input type="text" name="user_id" required>
+
+      <label>パスワード</label>
+      <input type="password" name="password" required>
+
+      <button type="submit" class="btn">ログイン</button>
+
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<script>
+  function formatDateJST() {
+    const now = new Date();
+    const jstTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Tokyo"}));
+    const year = jstTime.getFullYear();
+    const month = String(jstTime.getMonth() + 1).padStart(2, '0');
+    const day = String(jstTime.getDate()).padStart(2, '0');
+    const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+    const weekday = weekdays[jstTime.getDay()];
+    return `${year}/${month}/${day}（${weekday}）`; // JSTは削除
+  }
+
+  document.getElementById("header-date").textContent = formatDateJST();
+</script>
+
+</body>
+</html>

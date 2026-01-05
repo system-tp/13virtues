@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>１３の徳目 - 今日の入力</title>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Antique+Soft&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #3a7afe;
+      --accent-dark: #2f64d3;
+      --bg: #eef3f9;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --radius: 14px;
+      --sidebar-width: 200px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Noto Sans JP", "Segoe UI", system-ui;
+      background: var(--bg);
+      color: #1a1a1a;
+      box-sizing: border-box;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background: #fff;
+      border-right: 1px solid #d4dbe4;
+      overflow-y: auto;
+      padding-bottom: 140px;
+      box-sizing: border-box;
+    }
+
+    .sidebar h3 {
+      padding: 16px;
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar li {
+      padding: 10px 0 10px 8px;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f4f7;
+      white-space: nowrap;
+      list-style: none;
+    }
+
+    .sidebar li:hover {
+      background: var(--bg);
+    }
+
+    .sidebar li.current {
+      font-weight: 700;
+      background: #e0e7ff;
+    }
+
+    .sidebar li.viewing::after {
+      content: "（閲覧中）";
+      color: rgb(255, 0, 140);
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .main-wrap {
+      margin-left: 0;
+      transition: none;
+      min-height: 100vh;
+    }
+
+    body.with-sidebar .main-wrap {
+      margin-left: var(--sidebar-width);
+    }
+
+    .main-content {
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 18px 16px;
+      color: var(--muted);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 120px;
+      box-sizing: border-box;
+      min-height: 400px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e6ebf1;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    input[type=text],
+    textarea,
+    select {
+      padding: 12px 14px;
+      font-size: 15px;
+      border-radius: var(--radius);
+      border: 1px solid #d4dbe4;
+      background: #fafcff;
+      transition: none;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 95px;
+      resize: vertical;
+      width: 100%;
+    }
+
+  .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 36px;         /* 存在感のあるサイズ */
+      font-weight: bold;       /* しっかり見えるように太く */
+      color: #0c1beb;             /* はっきり見える黒 */
+      cursor: pointer;
+      user-select: none;
+      padding: 10px;           /* クリック範囲を広げる */
+      z-index: 100;            /* 他の要素に隠れないように */
+      transition: opacity 0.2s;
+    }
+
+    .arrow:hover {
+      color: var(--accent);    /* 触れたら青くする */
+      opacity: 0.7;
+    }
+
+    .arrow.left {
+      left: 10px;              /* カードの内側、左端に配置 */
+    }
+
+    .arrow.right {
+      right: 10px;             /* カードの内側、右端に配置 */
+    }
+
+    .current-date {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #1a1a1a;
+      text-align: center;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 18px 0;
+      background: linear-gradient(180deg, rgba(238, 243, 249, 0.2), rgba(238, 243, 249, 1));
+      display: flex;
+      justify-content: center;
+      transition: none;
+    }
+
+    body.with-sidebar .footer {
+      left: var(--sidebar-width);
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 14px 22px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: var(--radius);
+      width: 200px;
+      box-shadow: 0 6px 18px rgba(58, 122, 254, 0.25);
+    }
+
+    .btn:hover {
+      background: var(--accent-dark);
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+    }
+
+    input[type="range"] {
+      width: 240px;
+    }
+
+    /* PDFモーダル */
+    #book-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #book-modal .modal {
+      position: relative;
+      background: #fff;
+      padding: 8px;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #book-canvas {
+      background: #fff;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+    }
+
+    #book-modal .nav {
+      font-size: 28px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #555;
+    }
+
+    #book-close {
+      font-size: 24px;
+      background: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+
+    /* 左右ページボタン */
+    #book-prev,
+    #book-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 36px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(130, 164, 231, 0.7);
+      /* 半透明青 */
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      transition: background 0.2s;
+    }
+
+    #book-prev:hover,
+    #book-next:hover {
+      background: rgba(123, 162, 240, 0.9);
+    }
+
+    #book-prev {
+      left: 16px;
+    }
+
+    #book-next {
+      right: 16px;
+    }
+
+    /* 閉じるボタン（再定義・上書き） */
+    #book-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 28px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      /* 半透明白 */
+      color: black;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1500;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    #book-close:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    /* PDFツールバー親コンテナを完全透明に */
+    #pdf-toolbar {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: transparent !important;
+      /* 完全透明 */
+      padding: 0 !important;
+      /* 余白も消す */
+      border: none !important;
+      /* 境界線も消す */
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      z-index: 1500;
+    }
+
+    /* ズーム・リセットボタン */
+    #zoom-in,
+    #zoom-out,
+    #zoom-reset {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: transparent;
+      color: black;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      z-index: 1500;
+      box-shadow: none;
+      transition: background 0.2s;
+    }
+
+    #zoom-in:hover,
+    #zoom-out:hover,
+    #zoom-reset:hover {
+      background: rgba(39, 99, 218, 0.3);
+    }
+
+    /* ページシークバー */
+    #pdf-seekbar {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 6px 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    #pdf-page-range {
+      width: 200px;
+    }
+
+    /* ★ ページロード直後の強制ガード */
+    body:not(.modal-ready) #book-modal {
+      display: none !important;
+    }
+
+    /* 「13の徳目」にマウスを乗せたらポインター表示 */
+    #book-title {
+      cursor: pointer;
+    }
+
+    /* サイドバーを閉じた状態 */
+    body.sidebar-closed .sidebar {
+      display: none;
+    }
+
+    /* メイン領域を全幅に */
+    body.sidebar-closed .main-wrap {
+      margin-left: 0 !important;
+    }
+
+    /* フッターも全幅に */
+    body.sidebar-closed .footer {
+      left: 0 !important;
+      width: 100% !important;
+    }
+
+    /* ★ サイドバー初期フラッシュ防止 */
+    html.sidebar-preload .sidebar {
+      display: none !important;
+    }
+
+    html.sidebar-preload .main-wrap {
+      margin-left: 0 !important;
+    }
+
+    html.sidebar-preload .footer {
+      left: 0 !important;
+      width: 100% !important;
+    }
+    
+  </style>
+
+</head>
+
+<body class="{% if user.role == 'admin' %}with-sidebar{% endif %}">
+  {% if user.role == 'admin' %}
+  <nav class="sidebar">
+    <h3>ユーザー一覧</h3>
+    <ul>
+      {% for u in users %}
+      {% set classes=[] %}
+      {% if u.id==user.id %}{% set _=classes.append('current') %}{% endif %}
+      {% if viewing_user and u.id==viewing_user.id %}{% set _=classes.append('viewing') %}{% endif %}
+      <li class="{{ ' '.join(classes) }}">
+        <a href="{{ url_for('daily_input', view_user_id=u.id, date=request.args.get('date')) }}" style="text-decoration:none;color:inherit;">
+          {{ u.name_kanji }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <div class="main-wrap">
+    <main class="main-content">
+      <header style="font-family:'Zen Antique Soft', serif; margin-bottom:0px; position:relative;">
+        <div class="arrow left" id="prev-day">&#8249;</div>
+        <div class="arrow right" id="next-day">&#8250;</div>
+
+        {% if user.role == 'admin' %}
+        <button id="sidebar-toggle"
+          style="
+            position:absolute;
+            left:12px;
+            top:12px;
+            padding:6px 10px;
+            font-size:14px;
+            border-radius:8px;
+            border:1px solid #d4dbe4;
+            background:#fff;
+            cursor:pointer;
+          ">
+          ☰
+        </button>
+        {% endif %}
+
+        <div id="book-title" style="position:relative; display:inline-block;">
+          <span style="font-size:100px; font-weight:900; line-height:1; color:var(--accent);">13</span>
+          <span style="font-size:12px; position:absolute; top:16px; left:100%; margin-left:12px; white-space:nowrap; color:#b91f0b;">
+            コーチング型（質問型）朝礼
+          </span>
+        </div>
+
+        <div style="display:inline-flex; align-items:baseline; gap:4px; font-weight:900; color:var(--accent); margin-top:-10px;">
+          <span style="font-size:40px;">の</span>
+          <span style="font-size:60px; line-height:1;"> 德目</span>
+        </div>
+
+        <div class="current-date" id="current-date" style="margin-top: 0px; margin-bottom: 0px;">
+          {{ display_date }}｜{{ user_name }}
+        </div>
+
+        <script>
+          (function () {
+            try {
+              if (localStorage.getItem('sidebar-state') === 'closed') {
+                document.documentElement.classList.add('sidebar-preload');
+              }
+            } catch (e) {}
+          })();
+        </script>
+
+      </header>
+
+      <div class="container" id="container">
+        <section class="card" id="monthly-theme-card" data-page="{{ monthly_page_num }}" style="cursor: pointer;">
+          <div class="muted">月間テーマ</div>
+          <div class="title">{{ monthly_theme }}</div>
+        </section>
+
+        <section class="card" id="weekly-question-card" data-page="{{ weekly_page_num }}" style="cursor: pointer;">
+          <div class="muted">今週の質問</div>
+          <div class="title">{{ weekly_question }}</div>
+        </section>
+
+        <form id="daily-form" method="post" action="{{ url_for('daily_input', view_user_id=view_user_id) }}">
+          <section class="card" style="border-left:6px solid var(--accent);">
+            <div class="title" style="font-size:17px;margin-bottom:10px">一日の準備</div>
+            <label for="answer">質問に対する答え</label>
+            <textarea id="answer" name="answer" {% if viewing %}readonly{% endif %}>{{ form_data.answer }}</textarea>
+
+            <label for="today_goal" style="margin-top:16px;">今日の目標・やるべきこと</label>
+            <textarea id="today_goal" name="today_goal" {% if viewing %}readonly{% endif %}>{{ form_data.today_goal }}</textarea>
+
+            <label for="virtue" style="margin-top:16px;">今日の徳目</label>
+
+            <div style="display:flex; gap:12px;">
+              <select id="virtue" name="virtue" {% if viewing %}disabled{% endif %}>
+                <option value="">選択してください</option>
+                {% for v in virtues %}
+                <option value="{{ v }}" {% if form_data.virtue==v %}selected{% endif %}>
+                  {{ v }}
+                </option>
+                {% endfor %}
+              </select>
+
+              <select id="virtue2" name="virtue2" {% if viewing %}disabled{% endif %}>
+                <option value="">選択してください</option>
+                {% for v in virtues %}
+                <option value="{{ v }}" {% if form_data.virtue2==v %}selected{% endif %}>
+                  {{ v }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </section>
+
+          <section class="card" style="border-left:6px solid var(--accent);">
+            <div class="title" style="font-size:17px;margin-bottom:10px">一日の振り返り</div>
+
+            <label for="goal-score">今日の目標に対する達成度</label>
+            <input type="range" name="goal_score" id="goal-score" min="0" max="100" step="5" value="{{ form_data.goal_score or 50 }}" {% if viewing %}disabled{% endif %} oninput="document.getElementById('display-score').innerText = this.value">
+            <span id="display-score" style="font-size: 18px; font-weight: bold; color: #1a1a1a; margin-left: 10px;">{{ form_data.goal_score or 50 }}</span>
+
+            <label for="reflection" style="margin-top:16px;">今日の振り返り・気づき</label>
+            <textarea id="reflection" name="reflection" {% if viewing %}readonly{% endif %}>{{ form_data.reflection }}</textarea>
+            <label for="thanks" style="margin-top:16px;">今日のありがとう</label>
+            <textarea id="thanks" name="thanks" {% if viewing %}readonly{% endif %}>{{ form_data.thanks }}</textarea>
+          </section>
+
+          <section class="card" style="border-left:6px solid var(--accent);">
+            <div class="title" style="font-size:17px;margin-bottom:10px">実践課題の学びを仕事や人間関係でどう活かすか</div>
+            <textarea id="apply_learning" name="apply_learning" {% if viewing %}readonly{% endif %}>{{ form_data.apply_learning }}</textarea>
+          </section>
+
+          <div id="pdf-banner-area" style="max-width: 1100px; margin: 25px auto 15px; padding: 0 24px; display: none;">
+            <div style="background: #fff0f3; 
+                        border-radius: 20px; 
+                        padding: 12px; 
+                        border: 1px solid #ffe0e6; 
+                        box-shadow: 0 10px 25px rgba(255, 143, 163, 0.12); 
+                        position: relative;">
+              
+              <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; margin-bottom: 10px;">
+                <span style="color: #ff8fa3; font-size: 18px;">♥</span>
+                <span style="font-family: 'Zen Antique Soft', serif; font-size: 14px; color: #a67b85; letter-spacing: 0.05em; font-weight: bold;">
+                  Special Thanks
+                </span>
+                <span style="color: #ff8fa3; font-size: 18px;">♥</span>
+              </div>
+
+              <div style="background: white; border-radius: 12px; overflow: hidden; line-height: 0; border: 1px solid #ffd1dc; margin-top: 10px;">
+                <canvas id="pdf-bottom-clipper" style="width: 100%; height: auto; display: block;"></canvas>
+              </div>
+              
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </main>
+  </div>
+
+  {% if not viewing %}
+  <div class="footer">
+    <button class="btn" type="submit" form="daily-form" id="save-btn">保存する</button>
+  </div>
+  {% endif %}
+
+  <div id="book-modal">
+    <div class="modal">
+      <div id="pdf-toolbar">
+        <button id="zoom-out">−</button>
+        <span id="zoom-label">100%</span>
+        <button id="zoom-in">＋</button>
+      </div>
+      <button id="book-prev" class="nav">‹</button>
+      <canvas id="book-canvas"></canvas>
+      <button id="book-next" class="nav">›</button>
+      <button id="book-close">×</button>
+    </div>
+
+    <div id="pdf-seekbar">
+      <span id="pdf-page-label">1 / 1</span>
+      <input type="range" id="pdf-page-range" min="1" max="1" value="1">
+    </div>
+
+    <div id="pdf-loading" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:24px; font-weight:700; color:var(--accent); background:rgba(255,255,255,0.8); padding:12px 20px; border-radius:12px; z-index:1600; display:none;">
+      読み込み中…
+    </div>
+  </div>
+
+  <script>
+    const DISPLAY_DATE = {{ display_date | tojson }};
+    const VIEW_USER_ID = {{ view_user_id | default('', true) | tojson }};
+    const USER_NAME = {{ user_name | tojson }};
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // スライダー
+      const slider = document.getElementById('goal-score');
+      const sliderVal = document.getElementById('goal-score-val');
+      if (slider && sliderVal) {
+        sliderVal.textContent = slider.value;
+        slider.addEventListener('input', () => sliderVal.textContent = slider.value);
+      }
+
+      // 日付の曜日表示
+      (function renderDate() {
+        try {
+          const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+          let parts = DISPLAY_DATE.split('/').map(Number);
+          if (parts.length === 3) {
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            const w = weekdays[d.getDay()];
+            const el = document.getElementById('current-date');
+            if (el) {
+              el.textContent = `${parts[0]}/${String(parts[1]).padStart(2, '0')}/${String(parts[2]).padStart(2, '0')}（${w}）｜${USER_NAME}`;
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+
+      // 日付移動
+      function changeDate(offset) {
+        // ★ 追加：PDFモーダルを即座に閉じる
+        const modal = document.getElementById('book-modal');
+        if (modal) modal.style.display = 'none';
+
+        const p = DISPLAY_DATE.split('/').map(Number);
+        const d = new Date(p[0], p[1] - 1, p[2]);
+        d.setDate(d.getDate() + offset);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const urlDate = `${y}-${m}-${day}`;
+        const base = VIEW_USER_ID ? `/daily_input/${VIEW_USER_ID}` : '/daily_input';
+        window.location.href = `${base}?date=${urlDate}`;
+      }
+
+      document.getElementById('prev-day')?.addEventListener('click', () => changeDate(-1));
+      document.getElementById('next-day')?.addEventListener('click', () => changeDate(1));
+
+      // スワイプ移動
+      let sx = 0, ex = 0;
+      const area = document.getElementById('container');
+      if (area) {
+        area.addEventListener('touchstart', e => sx = e.changedTouches[0].screenX, { passive: true });
+        area.addEventListener('touchend', e => {
+          ex = e.changedTouches[0].screenX;
+          const diff = ex - sx;
+          if (Math.abs(diff) > 70) {
+            if (diff > 0) changeDate(-1);
+            else changeDate(1);
+          }
+        }, { passive: true });
+      }
+
+      // --- サイドバー開閉制御 ---
+      (function () {
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        if (!toggleBtn) return;
+
+        // ★ 初期ガード解除（重要）
+        document.documentElement.classList.remove('sidebar-preload');
+
+        // 状態復元
+        const saved = localStorage.getItem('sidebar-state');
+        if (saved === 'closed') {
+          document.body.classList.add('sidebar-closed');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+          const closed = document.body.classList.toggle('sidebar-closed');
+          localStorage.setItem('sidebar-state', closed ? 'closed' : 'open');
+        });
+      })();
+
+    });
+  </script>
+
+  <script type="module">
+    document.body.classList.remove('modal-ready');
+
+    import * as pdfjsLib from "{{ url_for('static', filename='pdfjs/build/pdf.mjs') }}";
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ url_for('static', filename='pdfjs/build/pdf.worker.mjs') }}";
+
+    // --- 要素の取得 ---
+    const modal = document.getElementById('book-modal');
+    const canvas = document.getElementById('book-canvas');
+    const ctx = canvas.getContext('2d');
+    const prevBtn = document.getElementById('book-prev');
+    const nextBtn = document.getElementById('book-next');
+    const closeBtn = document.getElementById('book-close');
+    const cardMonthly = document.getElementById('monthly-theme-card');
+    const cardWeekly = document.getElementById('weekly-question-card');
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const zoomLabel = document.getElementById('zoom-label');
+    const pageRange = document.getElementById('pdf-page-range');
+    const pageLabel = document.getElementById('pdf-page-label');
+    const pdfBaseUrl = "{{ url_for('static', filename='pdf/') }}";
+
+    // --- PDF設定 ---
+    const parts = DISPLAY_DATE.split('/').map(Number);
+    const year = parts[0];
+    const month = String(parts[1]).padStart(2, '0');
+    const url = `${pdfBaseUrl}theme_${year}_${month}.pdf?v={{ cache_buster }}`;
+
+    let pdf = null;
+    let pageNumber = 1;
+    let totalPages = 0;
+    let zoomScale = 1.0;
+    let panX = 0, panY = 0;
+    const pdfCache = {};
+
+    // --- キャンバスのラップ（パン操作用） ---
+    const canvasWrapper = document.createElement('div');
+    canvasWrapper.style.cssText = 'position:relative; display:inline-block; cursor:grab;';
+    canvas.parentNode.insertBefore(canvasWrapper, canvas);
+    canvasWrapper.appendChild(canvas);
+
+    // --- 表示更新系関数 ---
+    function updatePan() {
+      canvasWrapper.style.transform = `translate(${panX}px, ${panY}px)`;
+    }
+
+    function updateSeekbar() {
+      if (pageRange && pageLabel) {
+        pageRange.max = totalPages;
+        pageRange.value = pageNumber;
+        pageLabel.textContent = `${pageNumber} / ${totalPages}`;
+      }
+    }
+
+    async function renderPage(num) {
+      if (!pdf) return;
+      const page = await pdf.getPage(num);
+      const baseScale = Math.min(
+        0.9 * window.innerWidth / page.view[2],
+        0.9 * window.innerHeight / page.view[3]
+      );
+      const viewport = page.getViewport({ scale: baseScale * zoomScale });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: ctx, viewport }).promise;
+
+      prevBtn.disabled = (pageNumber <= 1);
+      nextBtn.disabled = (pageNumber >= totalPages);
+      zoomLabel.textContent = `${Math.round(zoomScale * 100)}%`;
+      updateSeekbar();
+      updatePan();
+    }
+
+    function resetView() {
+      zoomScale = 1.0;
+      panX = 0;
+      panY = 0;
+      renderPage(pageNumber);
+    }
+
+    // --- 統合：PDF表示メイン関数 ---
+    async function openPDF(targetPageNum) {
+      modal.style.display = 'flex';
+
+      // 1. ロード処理（キャッシュ活用）
+      if (!pdf) {
+        const monthKey = `${year}_${month}`;
+        try {
+          if (pdfCache[monthKey]) {
+            pdf = pdfCache[monthKey];
+          } else {
+            pdf = await pdfjsLib.getDocument(url).promise;
+            pdfCache[monthKey] = pdf;
+          }
+          totalPages = pdf.numPages;
+        } catch (e) {
+          console.error("PDF 読み込みエラー:", e);
+          showErrorMessage();
+          return;
+        }
+      }
+
+      // 2. ページ番号の設定
+      pageNumber = (targetPageNum > 0 && targetPageNum <= totalPages) ? targetPageNum : 1;
+
+      // 3. 表示のリセットと描画
+      resetView();
+    }
+
+    function showErrorMessage() {
+      canvas.width = 800;
+      canvas.height = 600;
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#333';
+      ctx.font = '28px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('PDF がありません', canvas.width / 2, canvas.height / 2);
+      [prevBtn, nextBtn, zoomInBtn, zoomOutBtn].forEach(btn => btn.disabled = true);
+    }
+
+    // --- イベントリスナー ---
+    // --- 各カードのクリックイベント ---
+    const titleHeader = document.getElementById('book-title');
+
+    if (titleHeader) {
+      titleHeader.addEventListener('click', () => openPDF(1));
+    }
+
+    // 月間テーマ（data-page 属性を使用）
+    if (cardMonthly) {
+      cardMonthly.onclick = function() {
+        const target = Number(this.dataset.page) || 1;
+        openPDF(target);
+      };
+    }
+
+    // 今週の質問（HTMLのdata-page属性から取得）
+    if (cardWeekly) {
+      cardWeekly.onclick = function() {
+        // dataset.page から値を取得。取得できない場合は1ページ目とする
+        const target = Number(this.dataset.page) || 1;
+        openPDF(target);
+      };
+    }
+
+    // ナビゲーション
+    prevBtn.onclick = () => {
+      if (pageNumber > 1) {
+        pageNumber--;
+        resetView();
+      }
+    };
+    nextBtn.onclick = () => {
+      if (pageNumber < totalPages) {
+        pageNumber++;
+        resetView();
+      }
+    };
+    closeBtn.onclick = () => {
+      modal.style.display = 'none';
+      resetView();
+    };
+
+    // ズーム
+    zoomInBtn.onclick = () => {
+      zoomScale = Math.min(zoomScale + 0.15, 3.0);
+      renderPage(pageNumber);
+    };
+    zoomOutBtn.onclick = () => {
+      zoomScale = Math.max(zoomScale - 0.15, 0.6);
+      renderPage(pageNumber);
+    };
+
+    const resetBtn = document.createElement('button');
+    resetBtn.textContent = '⟳';
+    resetBtn.id = 'zoom-reset';
+    resetBtn.onclick = () => {
+      pageNumber = 1; // ← ★ これが無かった
+      resetView(); // ← 既存関数をそのまま使用
+    };
+    document.getElementById('pdf-toolbar').appendChild(resetBtn);
+
+    // シークバー
+    if (pageRange) {
+      pageRange.addEventListener('input', () => {
+        pageNumber = Number(pageRange.value);
+        renderPage(pageNumber);
+      });
+    }
+
+    // --- ドラッグ＆パン操作 ---
+    let isDragging = false,
+      dragStartX = 0,
+      dragStartY = 0;
+    const startDrag = (x, y) => {
+      isDragging = true;
+      dragStartX = x - panX;
+      dragStartY = y - panY;
+    };
+    const moveDrag = (x, y) => {
+      if (!isDragging) return;
+      panX = x - dragStartX;
+      panY = y - dragStartY;
+      updatePan();
+    };
+    const endDrag = () => {
+      isDragging = false;
+      canvasWrapper.style.cursor = 'grab';
+    };
+
+    canvasWrapper.addEventListener('mousedown', e => {
+      startDrag(e.clientX, e.clientY);
+      canvasWrapper.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+    window.addEventListener('mouseup', endDrag);
+
+    canvasWrapper.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }, {
+      passive: true
+    });
+    canvasWrapper.addEventListener('touchmove', e => {
+      if (isDragging) moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }, {
+      passive: true
+    });
+    canvasWrapper.addEventListener('touchend', endDrag);
+
+    document.body.classList.add('modal-ready');
+
+    // --- 特定ページの下部10%を切り出して埋め込む機能 ---
+    (async function initDayBanner() {
+      const bannerCanvas = document.getElementById('pdf-bottom-clipper');
+      const bannerArea = document.getElementById('pdf-banner-area');
+      if (!bannerCanvas || !bannerArea) return;
+
+      try {
+        let bannerPdf;
+        const monthKey = `${year}_${month}`;
+
+        // 1. キャッシュから取得（なければロード）
+        if (window.pdfCache && window.pdfCache[monthKey]) {
+          bannerPdf = window.pdfCache[monthKey];
+        } else {
+          bannerPdf = await pdfjsLib.getDocument(url).promise;
+          if (!window.pdfCache) window.pdfCache = {};
+          window.pdfCache[monthKey] = bannerPdf;
+        }
+        
+        // 2. 日付計算（省略なし）
+        const startPage = parseInt({{ weekly_page_num | tojson }}) || 1;
+        const weekStartStr = "{{ weekly_start_date }}";
+        const dParts = DISPLAY_DATE.split('/').map(Number);
+        const currentLocalTime = new Date(dParts[0], dParts[1] - 1, dParts[2]).getTime();
+        const sParts = weekStartStr.split('-').map(Number);
+        const startLocalTime = new Date(sParts[0], sParts[1] - 1, sParts[2]).getTime();
+        const diffDays = Math.round((currentLocalTime - startLocalTime) / 86400000);
+        let targetPageNum = Math.max(1, Math.min(startPage + diffDays + 1, bannerPdf.numPages));
+
+        // 3. 描画（軽量化設定）
+        const page = await bannerPdf.getPage(targetPageNum);
+        
+        // ★ 解像度を1.6に調整（速度と綺麗さのバランス）
+        const viewport = page.getViewport({ scale: 1.6 }); 
+        const clipHeight = viewport.height * 0.09; 
+        const startY = viewport.height - clipHeight;
+
+        bannerCanvas.width = viewport.width;
+        bannerCanvas.height = clipHeight;
+
+        const ctx = bannerCanvas.getContext('2d');
+        
+        // ★ awaitせずにレンダリング開始
+        page.render({
+          canvasContext: ctx,
+          viewport: viewport,
+          transform: [1, 0, 0, 1, 0, -startY] 
+        });
+
+        // ★ 即座にエリアを表示
+        bannerArea.style.display = 'block'; 
+        
+      } catch (e) {
+        console.error("Banner Speed-up Error:", e);
+      }
+    })();
+
+  </script>
+</body>
+
+</html>

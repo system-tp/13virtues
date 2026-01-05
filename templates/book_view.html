@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>文庫ビューア（モーダル＋PC/スマホ対応）</title>
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  user-select: none;
+  overflow: hidden;
+}
+
+.modal {
+  background: #e5e5e5;
+  width: 90vw;
+  max-width: 1000px;
+  aspect-ratio: 297 / 210; /* A4横 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 0 12px rgba(0,0,0,0.5);
+  border-radius: 8px;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  cursor: pointer;
+  color: #555;
+  padding: 4px 12px;
+  border-radius: 4px;
+  user-select: none;
+  z-index: 10;
+}
+.nav:disabled { opacity: 0.2; cursor: default; }
+#prev { left: 8px; }
+#next { right: 8px; }
+
+canvas {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(0,0,0,0.25);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#magnifier {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  border: 2px solid #3a7afe;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+  z-index: 20;
+}
+
+.zoom-controls {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 15;
+}
+.zoom-controls button {
+  font-size: 18px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background: #fff;
+}
+</style>
+</head>
+<body>
+<div class="modal">
+  <button id="prev" class="nav">‹</button>
+  <canvas id="spread"></canvas>
+  <canvas id="magnifier"></canvas>
+  <button id="next" class="nav">›</button>
+  <div class="zoom-controls">
+    <button id="zoom-in">＋</button>
+    <button id="zoom-out">－</button>
+  </div>
+</div>
+
+<script type="module">
+import * as pdfjsLib from "{{ url_for('static', filename='pdfjs/build/pdf.mjs') }}";
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "{{ url_for('static', filename='pdfjs/build/pdf.worker.mjs') }}";
+
+const url = "{{ url_for('static', filename='pdf/theme_2025_12.pdf') }}";
+
+const canvas = document.getElementById("spread");
+const ctx = canvas.getContext("2d");
+const magCanvas = document.getElementById("magnifier");
+const magCtx = magCanvas.getContext("2d");
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
+const zoomInBtn = document.getElementById("zoom-in");
+const zoomOutBtn = document.getElementById("zoom-out");
+
+let pdf;
+let pageNumber = 1;
+let totalPages = 0;
+let scale = 1;       // ページ全体の拡縮
+const magScale = 2;  // 虫眼鏡倍率
+let dragStart = null;
+
+// PDFレンダリング
+async function renderPage(num) {
+  const page = await pdf.getPage(num);
+  const modal = document.querySelector(".modal");
+  const viewport = page.getViewport({ scale });
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  await page.render({ canvasContext: ctx, viewport }).promise;
+
+  // 中央ガター（影）
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  ctx.fillRect(canvas.width/2 - 2, 0, 4, canvas.height);
+
+  prevBtn.disabled = (pageNumber <= 1);
+  nextBtn.disabled = (pageNumber >= totalPages);
+}
+
+// PDF初期化
+async function init() {
+  pdf = await pdfjsLib.getDocument(url).promise;
+  totalPages = pdf.numPages;
+  await renderPage(pageNumber);
+}
+
+// ページ切り替え
+prevBtn.onclick = () => { if(pageNumber>1){ pageNumber--; renderPage(pageNumber); } };
+nextBtn.onclick = () => { if(pageNumber<totalPages){ pageNumber++; renderPage(pageNumber); } };
+
+// ズーム
+zoomInBtn.onclick = () => { scale *= 1.2; renderPage(pageNumber); };
+zoomOutBtn.onclick = () => { scale /= 1.2; renderPage(pageNumber); };
+
+// キーボード操作
+document.addEventListener("keydown", e => {
+  if(e.key === "ArrowLeft") prevBtn.click();
+  if(e.key === "ArrowRight") nextBtn.click();
+  if(e.key === "+") zoomInBtn.click();
+  if(e.key === "-") zoomOutBtn.click();
+});
+
+// スマホスワイプ操作
+let touchStartX = 0;
+canvas.addEventListener("touchstart", e => {
+  if(e.touches.length === 1) touchStartX = e.touches[0].clientX;
+});
+canvas.addEventListener("touchend", e => {
+  if(e.changedTouches.length === 1) {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if(diff > 50) prevBtn.click();
+    else if(diff < -50) nextBtn.click();
+  }
+});
+
+// 虫眼鏡ドラッグ
+canvas.addEventListener("mousedown", e => {
+  dragStart = {x: e.offsetX, y: e.offsetY};
+  magCanvas.style.display = 'block';
+});
+canvas.addEventListener("mousemove", e => {
+  if(dragStart){
+    const x = Math.min(dragStart.x, e.offsetX);
+    const y = Math.min(dragStart.y, e.offsetY);
+    const w = Math.abs(e.offsetX - dragStart.x);
+    const h = Math.abs(e.offsetY - dragStart.y);
+    if(w<2 || h<2) return;
+
+    magCanvas.width = w*magScale;
+    magCanvas.height = h*magScale;
+    magCanvas.style.left = x + 'px';
+    magCanvas.style.top = y + 'px';
+
+    magCtx.clearRect(0,0,magCanvas.width, magCanvas.height);
+    magCtx.drawImage(canvas, x, y, w, h, 0, 0, magCanvas.width, magCanvas.height);
+  }
+});
+canvas.addEventListener("mouseup", e => { dragStart=null; magCanvas.style.display='none'; });
+canvas.addEventListener("mouseleave", e => { dragStart=null; magCanvas.style.display='none'; });
+
+// タッチ対応
+canvas.addEventListener("touchstart", e => {
+  if(e.touches.length===1) dragStart={x:e.touches[0].clientX, y:e.touches[0].clientY};
+}, {passive:true});
+canvas.addEventListener("touchmove", e => {
+  if(dragStart && e.touches.length===1){
+    const x = Math.min(dragStart.x, e.touches[0].clientX);
+    const y = Math.min(dragStart.y, e.touches[0].clientY);
+    const w = Math.abs(e.touches[0].clientX - dragStart.x);
+    const h = Math.abs(e.touches[0].clientY - dragStart.y);
+    if(w<2||h<2) return;
+    magCanvas.width = w*magScale;
+    magCanvas.height = h*magScale;
+    magCanvas.style.left = x+'px';
+    magCanvas.style.top = y+'px';
+    magCanvas.style.display='block';
+    magCtx.clearRect(0,0,magCanvas.width,magCanvas.height);
+    magCtx.drawImage(canvas, x, y, w, h, 0, 0, magCanvas.width, magCanvas.height);
+  }
+}, {passive:true});
+canvas.addEventListener("touchend", e => { dragStart=null; magCanvas.style.display='none'; }, {passive:true});
+
+init();
+</script>
+</body>
+</html>
