@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 import pytz
 
 app = Flask(__name__)
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 app.config.from_object(Config)
