@@ -567,6 +567,11 @@
           <div class="title">{{ weekly_question }}</div>
         </section>
 
+        <section class="card" style="border-left:6px solid var(--accent);">
+          <div class="title" style="font-size:17px;margin-bottom:10px">実践課題の学びを仕事や人間関係でどう活かすか</div>
+          <textarea id="apply_learning" name="apply_learning" {% if viewing %}readonly{% endif %}>{{ form_data.apply_learning }}</textarea>
+        </section>
+
         <form id="daily-form" method="post" action="{{ url_for('daily_input', view_user_id=view_user_id) }}">
           <section class="card" style="border-left:6px solid var(--accent);">
             <div class="title" style="font-size:17px;margin-bottom:10px">一日の準備</div>
@@ -610,11 +615,6 @@
             <textarea id="reflection" name="reflection" {% if viewing %}readonly{% endif %}>{{ form_data.reflection }}</textarea>
             <label for="thanks" style="margin-top:16px;">今日のありがとう</label>
             <textarea id="thanks" name="thanks" {% if viewing %}readonly{% endif %}>{{ form_data.thanks }}</textarea>
-          </section>
-
-          <section class="card" style="border-left:6px solid var(--accent);">
-            <div class="title" style="font-size:17px;margin-bottom:10px">実践課題の学びを仕事や人間関係でどう活かすか</div>
-            <textarea id="apply_learning" name="apply_learning" {% if viewing %}readonly{% endif %}>{{ form_data.apply_learning }}</textarea>
           </section>
 
           <div id="pdf-banner-area" style="max-width: 1100px; margin: 25px auto 15px; padding: 0 24px; display: none;">
