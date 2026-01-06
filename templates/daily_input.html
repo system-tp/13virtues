@@ -467,8 +467,6 @@
   <div class="main-wrap">
     <main class="main-content">
       <header style="font-family:'Zen Antique Soft', serif; margin-bottom:0px; position:relative;">
-        <div class="arrow left" id="prev-day">&#8249;</div>
-        <div class="arrow right" id="next-day">&#8250;</div>
 
         {% if user.role == 'admin' %}
         <button id="sidebar-toggle"
@@ -499,27 +497,39 @@
           <span style="font-size:60px; line-height:1;"> 德目</span>
         </div>
 
-        <div id="calendar-trigger" style="display:inline-block; position:relative; margin-left: 60px; vertical-align: middle; cursor: pointer; top: -5px; z-index: 100; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px;">
           
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--accent)" stroke-width="2"/>
-            <path d="M3 9H21" stroke="var(--accent)" stroke-width="2"/>
-            <path d="M8 2V6" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
-            <path d="M16 2V6" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
-            <rect x="7" y="13" width="2" height="2" rx="0.5" fill="var(--accent)"/>
-            <rect x="11" y="13" width="2" height="2" rx="0.5" fill="var(--accent)"/>
-            <rect x="15" y="13" width="2" height="2" rx="0.5" fill="var(--accent)"/>
-            <rect x="7" y="17" width="2" height="2" rx="0.5" fill="var(--accent)"/>
-            <rect x="11" y="17" width="2" height="2" rx="0.5" fill="var(--accent)"/>
-          </svg>
+          <div class="arrow" id="prev-day" style="position: static; transform: translateY(-6px); font-size: 40px; padding: 10px; cursor: pointer; line-height: 1;">&#8249;</div>
 
-          <input type="date" id="date-picker" 
-            value="{{ request.args.get('date', '') }}"
-            style="position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; border: none;">
+          <div class="current-date" id="current-date" style="margin: 0; font-family: 'Zen Antique Soft', serif; font-size: 24px; font-weight: 700; color: #1a1a1a;">
+            {{ display_date }}
+          </div>
+
+          <div class="arrow" id="next-day" style="position: static; transform: translateY(-6px); font-size: 40px; padding: 10px; cursor: pointer; line-height: 1;">&#8250;</div>
+
+          <div id="calendar-trigger" style="display:inline-block; position:relative; cursor: pointer; transform: translateY(0px); z-index: 100; transition: transform 0.2s; margin-left: 5px;" onmouseover="this.style.transform='scale(1.1) translateY(-2px)'" onmouseout="this.style.transform='scale(1) translateY(-2px)'">
+            
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--accent)" stroke-width="2"/>
+              <path d="M3 9H21" stroke="var(--accent)" stroke-width="2"/>
+              <path d="M8 2V6" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M16 2V6" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+              <rect x="7" y="13" width="2" height="2" rx="0.5" fill="var(--accent)"/>
+              <rect x="11" y="13" width="2" height="2" rx="0.5" fill="var(--accent)"/>
+              <rect x="15" y="13" width="2" height="2" rx="0.5" fill="var(--accent)"/>
+              <rect x="7" y="17" width="2" height="2" rx="0.5" fill="var(--accent)"/>
+              <rect x="11" y="17" width="2" height="2" rx="0.5" fill="var(--accent)"/>
+            </svg>
+
+            <input type="date" id="date-picker" 
+              value="{{ request.args.get('date', '') }}"
+              style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; border: none; cursor: pointer;">
+          </div>
+
         </div>
 
-        <div class="current-date" id="current-date" style="margin-top: 0px; margin-bottom: 0px;">
-          {{ display_date }}｜{{ user_name }}
+        <div id="user-display-name" style="text-align: center; font-size: 24px; font-weight: 700; color: #1a1a1a; margin-top: 5px; margin-bottom: 15px;">
+          {{ user_name }}
         </div>
 
         <script>
@@ -567,11 +577,6 @@
           <div class="title">{{ weekly_question }}</div>
         </section>
 
-        <section class="card" style="border-left:6px solid var(--accent);">
-          <div class="title" style="font-size:17px;margin-bottom:10px">実践課題の学びを仕事や人間関係でどう活かすか</div>
-          <textarea id="apply_learning" name="apply_learning" {% if viewing %}readonly{% endif %}>{{ form_data.apply_learning }}</textarea>
-        </section>
-
         <form id="daily-form" method="post" action="{{ url_for('daily_input', view_user_id=view_user_id) }}">
           <section class="card" style="border-left:6px solid var(--accent);">
             <div class="title" style="font-size:17px;margin-bottom:10px">一日の準備</div>
@@ -617,20 +622,32 @@
             <textarea id="thanks" name="thanks" {% if viewing %}readonly{% endif %}>{{ form_data.thanks }}</textarea>
           </section>
 
-          <div id="pdf-banner-area" style="max-width: 1100px; margin: 25px auto 15px; padding: 0 24px; display: none;">
-            <div style="background: #fff0f3; 
-                        border-radius: 20px; 
-                        padding: 12px; 
-                        border: 1px solid #ffe0e6; 
-                        box-shadow: 0 10px 25px rgba(255, 143, 163, 0.12); 
-                        position: relative;">
+          <div id="pdf-banner-area" style="max-width: 1100px; margin: 25px auto 15px; padding: 0; display: none;">
+            <div style="position: relative; width: 100%;">
               
-              <div style="background: white; border-radius: 12px; overflow: hidden; line-height: 0; border: 1px solid #ffd1dc; margin-top: 10px;">
+              <div style="background: white; 
+                          border-radius: 14px; 
+                          overflow: hidden; 
+                          line-height: 0; 
+                          border: 2px solid #ffd1dc; 
+                          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                
                 <canvas id="pdf-bottom-clipper" style="width: 100%; height: auto; display: block;"></canvas>
+                
               </div>
-              
             </div>
           </div>
+
+          <div style="margin: 45px 0 20px 0; text-align: center; font-family: 'Zen Antique Soft', serif;">
+            <h2 style="font-size: 40px; font-weight: 900; color: var(--accent); letter-spacing: 0.1em; margin: 0;">
+              目標管理シート
+            </h2>
+          </div>
+
+          <section class="card" style="border-left:6px solid var(--accent);">
+            <div class="title" style="font-size:17px;margin-bottom:10px">実践課題の学びを仕事や人間関係でどう活かすか</div>
+            <textarea id="apply_learning" name="apply_learning" {% if viewing %}readonly{% endif %}>{{ form_data.apply_learning }}</textarea>
+          </section>
 
         </form>
       </div>
@@ -690,7 +707,7 @@
             const w = weekdays[d.getDay()];
             const el = document.getElementById('current-date');
             if (el) {
-              el.textContent = `${parts[0]}/${String(parts[1]).padStart(2, '0')}/${String(parts[2]).padStart(2, '0')}（${w}）｜${USER_NAME}`;
+              el.textContent = `${parts[0]}/${String(parts[1]).padStart(2, '0')}/${String(parts[2]).padStart(2, '0')}（${w}）`;
             }
           }
         } catch (e) {

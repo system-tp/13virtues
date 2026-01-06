@@ -25,7 +25,7 @@ def index():
 # -----------------------------
 # ログイン
 # -----------------------------
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/13virtues/login", methods=["GET", "POST"])
 def login():
     error = None
     with SessionLocal() as db:
@@ -56,8 +56,8 @@ def login():
 # -----------------------------
 # 今日の入力（メイン）
 # -----------------------------
-@app.route("/daily_input", methods=["GET", "POST"])
-@app.route("/daily_input/<int:view_user_id>", methods=["GET", "POST"])
+@app.route("/13virtues/daily_input", methods=["GET", "POST"])
+@app.route("/13virtues/daily_input/<int:view_user_id>", methods=["GET", "POST"])
 def daily_input(view_user_id=None):
     if "user_id" not in session:
         return redirect(url_for("login"))
@@ -215,7 +215,7 @@ def daily_input(view_user_id=None):
 # -----------------------------
 # 日付変更
 # -----------------------------
-@app.route("/set_date/<string:new_date>")
+@app.route("/13virtues/set_date/<string:new_date>")
 def set_date(new_date):
     session["current_date"] = new_date
     return redirect(url_for("daily_input"))
@@ -223,7 +223,7 @@ def set_date(new_date):
 # -----------------------------
 # 徳目リーダー
 # -----------------------------
-@app.route("/book")
+@app.route("/13virtues/book")
 def book_view():
     return render_template("book_view.html")
 
