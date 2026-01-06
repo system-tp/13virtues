@@ -38,7 +38,7 @@ def login():
                 session["current_date"] = datetime.now(
                     pytz.timezone("Asia/Tokyo")
                 ).strftime("%Y-%m-%d")
-                return redirect("/daily_input")
+                return redirect(url_for("daily_input"))
 
         # 今月のテーマ
         today = datetime.now(pytz.timezone("Asia/Tokyo"))
@@ -57,7 +57,7 @@ def login():
 @app.route("/daily_input/<int:view_user_id>", methods=["GET", "POST"])
 def daily_input(view_user_id=None):
     if "user_id" not in session:
-        return redirect("/login")
+        return redirect(url_for("login"))
 
     with SessionLocal() as db:
         current_user = db.query(User).filter(User.id == session["user_id"]).first()
@@ -215,7 +215,7 @@ def daily_input(view_user_id=None):
 @app.route("/set_date/<string:new_date>")
 def set_date(new_date):
     session["current_date"] = new_date
-    return redirect(request.referrer or "/daily_input")
+    return redirect(request.referrer or url_for("daily_input"))
 
 # -----------------------------
 # 徳目リーダー
