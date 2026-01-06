@@ -218,7 +218,7 @@ def daily_input(view_user_id=None):
 @app.route("/set_date/<string:new_date>")
 def set_date(new_date):
     session["current_date"] = new_date
-    return redirect(request.referrer or url_for("daily_input"))
+    return redirect(url_for("daily_input"))
 
 # -----------------------------
 # 徳目リーダー
