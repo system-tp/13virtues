@@ -711,7 +711,7 @@
         const m = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
         const urlDate = `${y}-${m}-${day}`;
-        const base = VIEW_USER_ID ? `/13virtues/daily_input/${VIEW_USER_ID}` : '/daily_input';
+        const base = VIEW_USER_ID ? `/13virtues/daily_input/${VIEW_USER_ID}` : '/13virtues/daily_input';
         window.location.href = `${base}?date=${urlDate}`;
       }
 
