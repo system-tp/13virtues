@@ -146,12 +146,13 @@
 
     textarea {
       min-height: 95px;
+      font-size: 18px;
       resize: vertical;
       width: 100%;
     }
 
     #apply_learning {
-      min-height: 260px;
+      min-height: 95px;
       font-size: 18px;
       line-height: 1.2;
      }  
@@ -448,6 +449,33 @@
       width: 100% !important;
     }
     
+    /* 拡大時に背景を暗くし、スクロールを可能にする枠 */
+    .zoom-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 9999;
+        display: none;
+        overflow: auto; /* スクロールを許可 */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .pdf-banner-zoomed {
+        /* 中央寄せを解除 */
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        
+        /* 画面幅の2.5倍にして、左右に大きな余白を作る */
+        width: 250% !important; 
+        margin: 150px 50px !important; /* 上下に150px、左右に50pxの余白 */
+        max-width: none !important;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        display: block;
+    }
+
   </style>
 
 </head>
@@ -629,9 +657,8 @@
             <textarea id="thanks" name="thanks" {% if viewing %}readonly{% endif %}>{{ form_data.thanks }}</textarea>
           </section>
 
-          <div id="pdf-banner-area" style="max-width: 1100px; margin: 25px auto 15px; padding: 0; display: none;">
-            <div style="position: relative; width: 100%;">
-              
+          <div id="pdf-banner-area" style="max-width: 1100px; margin: 25px auto 15px; padding: 0; display: none; cursor: zoom-in;">
+            <div id="zoom-container" style="position: relative; width: 100%; transition: transform 0.3s ease;">
               <div style="background: white; 
                           border-radius: 14px; 
                           overflow: hidden; 
@@ -776,6 +803,28 @@
           localStorage.setItem('sidebar-state', closed ? 'closed' : 'open');
         });
       })();
+
+      // すべてのtextareaを対象に、自動で高さを調整する関数
+      function autoResizeTextarea() {
+        document.querySelectorAll('textarea').forEach(el => {
+          el.style.overflowY = 'hidden'; 
+          el.style.height = 'auto'; // 一旦リセット
+          // scrollHeight（中身の高さ）に合わせて設定
+          el.style.height = (el.scrollHeight) + 'px'; 
+        });
+      }
+
+      // 1. 入力した時にリアルタイムで伸ばす
+      document.querySelectorAll('textarea').forEach(el => {
+        el.addEventListener('input', () => {
+          el.style.height = 'auto';
+          el.style.height = el.scrollHeight + 'px';
+        });
+      });
+
+      // 2. ページ表示時（データ読み込み後）に実行
+      // 少しだけ時間を遅らせて実行すると、CSSの読み込みと競合せず確実に高さが合います
+      setTimeout(autoResizeTextarea, 100);
 
     });
   </script>
@@ -1070,7 +1119,43 @@
       }
     })();
 
-  </script>
+    // --- 【追加】バナー拡大・スライド機能 ---
+    (function initBannerZoom() {
+        const bannerArea = document.getElementById('pdf-banner-area');
+        const container = document.getElementById('zoom-container');
+        if (!bannerArea || !container) return;
+
+        // 背景暗転＆スクロール用のオーバーレイ要素を作成
+        const overlay = document.createElement('div');
+        overlay.className = 'zoom-overlay';
+        document.body.appendChild(overlay);
+
+        bannerArea.addEventListener('click', function() {
+            container.classList.add('pdf-banner-zoomed');
+            overlay.appendChild(container);
+            overlay.style.display = 'block';
+
+            // 拡大されたバナーが、ちょうど画面の真ん中に来るように計算
+            setTimeout(() => {
+                const scrollX = (container.offsetWidth - window.innerWidth) / 2;
+                const scrollY = (container.offsetHeight - window.innerHeight) / 2;
+                overlay.scrollTo({
+                    left: scrollX,
+                    top: scrollY,
+                    behavior: 'auto'
+                });
+            }, 50);
+        });
+
+        // 背景タップ（または画像タップ）で元に戻す
+        overlay.addEventListener('click', function() {
+            bannerArea.appendChild(container); // 元の場所に戻す
+            container.classList.remove('pdf-banner-zoomed');
+            overlay.style.display = 'none';
+        });
+    })();
+
+</script>
 </body>
 
 </html>
