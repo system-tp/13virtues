@@ -769,16 +769,30 @@
       document.getElementById('prev-day')?.addEventListener('click', () => changeDate(-1));
       document.getElementById('next-day')?.addEventListener('click', () => changeDate(1));
 
-      // スワイプ移動
-      let sx = 0, ex = 0;
+      // スワイプ移動（超・鈍感＋誤動作防止版）
+      let sx = 0, sy = 0, ex = 0, ey = 0;
       const area = document.getElementById('container');
       if (area) {
-        area.addEventListener('touchstart', e => sx = e.changedTouches[0].screenX, { passive: true });
+        area.addEventListener('touchstart', e => {
+          sx = e.changedTouches[0].screenX;
+          sy = e.changedTouches[0].screenY; // 縦位置も記録
+        }, { passive: true });
+
         area.addEventListener('touchend', e => {
+          // 入力中は無視
+          if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') {
+            return;
+          }
+
           ex = e.changedTouches[0].screenX;
-          const diff = ex - sx;
-          if (Math.abs(diff) > 70) {
-            if (diff > 0) changeDate(-1);
+          ey = e.changedTouches[0].screenY;
+          
+          const diffX = ex - sx;
+          const diffY = ey - sy;
+
+          // ★ 250px以上横に動いた、かつ「縦より横の動きが大きい」時だけ実行
+          if (Math.abs(diffX) > 250 && Math.abs(diffX) > Math.abs(diffY)) {
+            if (diffX > 0) changeDate(-1);
             else changeDate(1);
           }
         }, { passive: true });
