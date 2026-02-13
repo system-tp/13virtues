@@ -564,7 +564,10 @@
         </div>
 
         <div id="user-display-name" style="text-align: center; font-size: 24px; font-weight: 700; color: #1a1a1a; margin-top: 5px; margin-bottom: 15px;">
-          {{ user_name }}
+          <a href="{{ url_for('announcement', view_user_id=view_user_id, date=request.args.get('date')) }}" 
+            style="text-decoration: none; color: inherit; cursor: pointer;">
+            {{ user_name }}
+          </a>
         </div>
 
         <script>

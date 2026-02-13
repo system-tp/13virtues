@@ -3,6 +3,7 @@ from config import Config
 from db import SessionLocal, User, DailyInput, MonthlyTheme, WeeklyQuestion
 from datetime import datetime, timedelta
 import pytz
+import os
 
 app = Flask(__name__)
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -211,6 +212,105 @@ def daily_input(view_user_id=None):
         }
 
     return render_template("daily_input.html", **context)
+
+# -----------------------------
+# 発表用ページ
+# -----------------------------
+@app.route('/announcement')
+def announcement():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    # 表示対象のユーザーIDを取得（管理者用・自分用）
+    v_user_id = request.args.get('view_user_id')
+    target_user_id = int(v_user_id) if v_user_id and v_user_id != 'None' else session["user_id"]
+    
+    # 表示対象の日付を取得
+    date_str = request.args.get('date') or session.get("current_date")
+
+    with SessionLocal() as db:
+        # ユーザー情報の取得
+        target_user = db.query(User).filter(User.id == target_user_id).first()
+        if not target_user:
+            return "ユーザーが見つかりません", 404
+        
+        user_name = target_user.name_kanji
+        current_date_dt = datetime.strptime(date_str, '%Y-%m-%d')
+        yesterday_dt = current_date_dt - timedelta(days=1)
+
+        # 1. 今週の質問とPDFページ計算用データの取得
+        weekly = db.query(WeeklyQuestion).filter(
+            WeeklyQuestion.week_start_date <= current_date_dt.date()
+        ).order_by(WeeklyQuestion.week_start_date.desc()).first()
+
+        if weekly:
+            weekly_question = weekly.question_text
+            weekly_page_num = weekly.pages
+            weekly_start_date = weekly.week_start_date.strftime("%Y-%m-%d")
+        else:
+            weekly_question = "（今週の質問未登録）"
+            weekly_page_num = 1
+            weekly_start_date = current_date_dt.strftime("%Y-%m-%d")
+
+        # 2. 今月のテーマの取得
+        monthly = db.query(MonthlyTheme).filter(
+            MonthlyTheme.year == current_date_dt.year,
+            MonthlyTheme.month == current_date_dt.month
+        ).first()
+        monthly_theme = monthly.theme_text if monthly else "（今月のテーマ未登録）"
+
+        # 3. 当日のデータ（今日の準備・目標管理シート）の取得
+        current_entry = db.query(DailyInput).filter(
+            DailyInput.user_id == target_user.id,
+            DailyInput.date == current_date_dt.date()
+        ).first()
+
+        form_data = {
+            'answer': current_entry.answer if current_entry else "",
+            'today_goal': current_entry.today_goal if current_entry else "",
+            'virtue': current_entry.virtue if current_entry else "",
+            'virtue2': current_entry.virtue2 if current_entry else "",
+            'apply_learning': current_entry.apply_learning if current_entry else ""
+        }
+
+        # 4. 前日のデータ（昨日の振り返り）の取得
+        yesterday_entry = db.query(DailyInput).filter(
+            DailyInput.user_id == target_user.id,
+            DailyInput.date == yesterday_dt.date()
+        ).first()
+
+        yesterday_data = {
+            'reflection': yesterday_entry.reflection if yesterday_entry else "",
+            'thanks': yesterday_entry.thanks if yesterday_entry else "",
+            'goal_score': yesterday_entry.goal_score if yesterday_entry else 0
+        }
+
+        # 5. 日本語曜日の計算と日付フォーマット
+        jp_weeks = ["月", "火", "水", "木", "金", "土", "日"]
+        curr_w = jp_weeks[current_date_dt.weekday()]
+        yest_w = jp_weeks[yesterday_dt.weekday()]
+        
+        formatted_current = f"{current_date_dt.strftime('%Y/%m/%d')}({curr_w})"
+        formatted_yesterday = f"{yesterday_dt.strftime('%Y/%m/%d')}({yest_w})"
+
+        # 6. PDFバナー用の情報
+        pdf_filename = f"theme_{current_date_dt.year}_{current_date_dt.month:02}.pdf"
+        pdf_path = os.path.join(app.static_folder, 'pdf', pdf_filename)
+        cache_buster = int(os.path.getmtime(pdf_path)) if os.path.exists(pdf_path) else 0
+
+    # テンプレートにすべての変数を渡す
+    return render_template('announcement.html', 
+                           user_name=user_name, 
+                           form_data=form_data, 
+                           yesterday_data=yesterday_data,
+                           display_date=formatted_current,
+                           yesterday_display_date=formatted_yesterday,
+                           monthly_theme=monthly_theme,
+                           weekly_question=weekly_question,
+                           weekly_page_num=weekly_page_num,
+                           weekly_start_date=weekly_start_date,
+                           pdf_filename=pdf_filename,
+                           cache_buster=cache_buster)
 
 # -----------------------------
 # 日付変更
