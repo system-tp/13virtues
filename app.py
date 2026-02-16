@@ -282,7 +282,8 @@ def announcement():
         yesterday_data = {
             'reflection': yesterday_entry.reflection if yesterday_entry else "",
             'thanks': yesterday_entry.thanks if yesterday_entry else "",
-            'goal_score': yesterday_entry.goal_score if yesterday_entry else 0
+            'goal_score': yesterday_entry.goal_score if yesterday_entry else 0,
+            'apply_learning': yesterday_entry.apply_learning if yesterday_entry else ""
         }
 
         # 5. 日本語曜日の計算と日付フォーマット

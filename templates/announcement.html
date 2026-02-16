@@ -23,9 +23,9 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: 1100px; 
       margin: 0 auto;
-      padding-bottom: 60px;
+      padding: 20px 20px 80px 20px;
     }
 
     .back-nav {
@@ -61,7 +61,7 @@
     .card {
       background: var(--card);
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 24px; 
       margin-bottom: 24px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
       border: 1px solid #d4dbe4;
@@ -119,25 +119,8 @@
       border-radius: 10px;
     }
 
-    .container {
-      /* daily_input.htmlと同じ 800px に合わせます */
-      max-width: 1100px; 
-      margin: 0 auto;
-      padding: 20px 20px 80px 20px;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      /* カード内の左右余白を広めにとって、入力画面の安心感を再現 */
-      padding: 24px; 
-      margin-bottom: 24px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
-      border: 1px solid #d4dbe4;
-    }
-
     .content-box {
-      font-size: 19px; /* 文字サイズも読みやすい大きさに戻しました */
+      font-size: 19px;
       line-height: 1.7;
       white-space: pre-wrap;
       color: #1a1a1a;
@@ -159,7 +142,6 @@
       border: 1px solid #ccc;
     }
 
-    /* --- 追加：バナー拡大用のスタイル --- */
     .zoom-overlay {
       display: none;
       position: fixed;
@@ -167,23 +149,20 @@
       width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.9);
       z-index: 9999;
-      overflow: auto; /* 拡大時スクロール可能に */
+      overflow: auto;
       cursor: zoom-out;
     }
-
     .pdf-banner-zoomed {
-      width: 300% !important; /* 横幅を3倍（巨大化） */
+      width: 300% !important;
       max-width: none !important;
       cursor: zoom-out;
       margin: 0;
-      padding: 20px 0; /* 上下に余白 */
+      padding: 20px 0;
     }
-
     #pdf-banner-area {
       cursor: zoom-in;
     }
 
-    /* 見出し：真っ黒 */
     .theme-label {
       color: #000000;
       font-size: 16px;
@@ -191,25 +170,20 @@
       margin-bottom: 8px;
       display: block;
     }
-
-    /* 破線の枠：達成度の数字と同じ色 */
     .theme-content-box {
-      border: 1px dashed #2563eb; /* 達成度と同じ鮮やかな青 */
+      border: 1px dashed #2563eb;
       padding: 12px 15px;
       border-radius: 6px;
       margin-bottom: 25px;
       background: none;
     }
-
-    /* 枠内の文字：達成度の数字と同じ色 */
     .theme-text {
-      color: #2563eb;            /* 達成度と同じ色で統一 */
+      color: #2563eb;
       font-size: 20px;
       font-weight: bold;
       line-height: 1.5;
       margin: 0;
     }
-
   </style>
 </head>
 <body>
@@ -223,6 +197,15 @@
     <div style="font-family: 'Zen Antique Soft', serif; color: var(--accent); font-size: 40px; margin-bottom: 5px;">１３の徳目 発表</div>
     <h1 class="user-name">{{ user_name }}</h1>
   </header>
+
+  <section class="card" style="border-left: 6px solid var(--accent);">
+    <div class="title">
+      <span>昨日の目標管理シート</span>
+      <span class="title-date">{{ yesterday_display_date }}</span>
+    </div>
+    <label>実践課題の学びを仕事や人間関係でどう活かすか</label>
+    <div class="content-box">{{ yesterday_data.apply_learning or '（未記入）' }}</div>
+  </section>
 
   <section class="card" style="border-left: 6px solid var(--accent);">
     <div class="title">
@@ -252,17 +235,17 @@
     </div>
 
     <div class="theme-group">
-    <span class="theme-label">今月のテーマ</span>
-    <div class="theme-content-box">
+      <span class="theme-label">今月のテーマ</span>
+      <div class="theme-content-box">
         <div class="theme-text">{{ monthly_theme }}</div>
-    </div>
+      </div>
     </div>
 
     <div class="theme-group">
-    <span class="theme-label">今週の質問</span>
-    <div class="theme-content-box">
+      <span class="theme-label">今週の質問</span>
+      <div class="theme-content-box">
         <div class="theme-text">{{ weekly_question }}</div>
-    </div>
+      </div>
     </div>
 
     <label>質問に対する答え</label>
@@ -278,15 +261,7 @@
     </div>
   </section>
 
-  <section class="card" style="border-left: 6px solid var(--accent);"> <div class="title">
-      <span>目標管理シート</span>
-    </div>
-
-    <label>実践課題の学びを仕事や人間関係でどう活かすか</label>
-    <div class="content-box">{{ form_data.apply_learning or '（未記入）' }}</div>
-  </section>
-
-<div style="margin-top: 30px; text-align: center;">
+  <div style="margin-top: 30px; text-align: center;">
     <div id="pdf-banner-area" style="width: 100%; overflow: hidden; border-radius: 4px; display: none;">
       <div id="zoom-container" style="width: 100%;">
         <canvas id="pdf-canvas" style="width: 100%; height: auto; display: block;"></canvas>
@@ -297,86 +272,80 @@
     </div>
   </div>
 
-    </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <script>
-        (async function initAnnouncementBanner() {
-        const canvas = document.getElementById('pdf-canvas');
-        const bannerArea = document.getElementById('pdf-banner-area');
-        const container = document.getElementById('zoom-container');
-        const loadingMsg = document.getElementById('loading-msg');
-        if (!canvas || !bannerArea || !container) return;
+</div>
 
-        try {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-            const url = "{{ url_for('static', filename='pdf/' + pdf_filename) }}?v={{ cache_buster }}";
-            const pdf = await pdfjsLib.getDocument(url).promise;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script>
+  (async function initAnnouncementBanner() {
+    const canvas = document.getElementById('pdf-canvas');
+    const bannerArea = document.getElementById('pdf-banner-area');
+    const container = document.getElementById('zoom-container');
+    const loadingMsg = document.getElementById('loading-msg');
+    if (!canvas || !bannerArea || !container) return;
 
-            // ページ計算
-            const startPage = parseInt({{ weekly_page_num | tojson }}) || 1;
-            const weekStartStr = "{{ weekly_start_date }}";
-            const dParts = "{{ display_date }}".split('(')[0].split('/').map(Number);
-            const currentLocalTime = new Date(dParts[0], dParts[1] - 1, dParts[2]).getTime();
-            const sParts = weekStartStr.split('-').map(Number);
-            const startLocalTime = new Date(sParts[0], sParts[1] - 1, sParts[2]).getTime();
-            const diffDays = Math.round((currentLocalTime - startLocalTime) / 86400000);
-            let targetPageNum = Math.max(1, Math.min(startPage + diffDays + 1, pdf.numPages));
+    try {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+      const url = "{{ url_for('static', filename='pdf/' + pdf_filename) }}?v={{ cache_buster }}";
+      const pdf = await pdfjsLib.getDocument(url).promise;
 
-            const page = await pdf.getPage(targetPageNum);
-            const viewport = page.getViewport({ scale: 1.6 }); 
-            const clipHeight = viewport.height * 0.09; 
-            const startY = viewport.height - clipHeight;
+      const startPage = parseInt({{ weekly_page_num | tojson }}) || 1;
+      const weekStartStr = "{{ weekly_start_date }}";
+      const dParts = "{{ display_date }}".split('(')[0].split('/').map(Number);
+      const currentLocalTime = new Date(dParts[0], dParts[1] - 1, dParts[2]).getTime();
+      const sParts = weekStartStr.split('-').map(Number);
+      const startLocalTime = new Date(sParts[0], sParts[1] - 1, sParts[2]).getTime();
+      const diffDays = Math.round((currentLocalTime - startLocalTime) / 86400000);
+      let targetPageNum = Math.max(1, Math.min(startPage + diffDays + 1, pdf.numPages));
 
-            canvas.width = viewport.width;
-            canvas.height = clipHeight;
-            const ctx = canvas.getContext('2d');
-            
-            await page.render({
-            canvasContext: ctx,
-            viewport: viewport,
-            transform: [1, 0, 0, 1, 0, -startY] 
-            }).promise;
+      const page = await pdf.getPage(targetPageNum);
+      const viewport = page.getViewport({ scale: 1.6 }); 
+      const clipHeight = viewport.height * 0.09; 
+      const startY = viewport.height - clipHeight;
 
-            loadingMsg.style.display = 'none';
-            bannerArea.style.display = 'block';
+      canvas.width = viewport.width;
+      canvas.height = clipHeight;
+      const ctx = canvas.getContext('2d');
+      
+      await page.render({
+        canvasContext: ctx,
+        viewport: viewport,
+        transform: [1, 0, 0, 1, 0, -startY] 
+      }).promise;
 
-            // --- ここから【拡大・スライド機能】の移植 ---
-            
-            // オーバーレイ要素を作成してbodyに追加
-            const overlay = document.createElement('div');
-            overlay.className = 'zoom-overlay';
-            document.body.appendChild(overlay);
+      loadingMsg.style.display = 'none';
+      bannerArea.style.display = 'block';
 
-            bannerArea.addEventListener('click', function() {
-                container.classList.add('pdf-banner-zoomed');
-                overlay.appendChild(container); // コンテナを暗転画面に移動
-                overlay.style.display = 'block';
+      const overlay = document.createElement('div');
+      overlay.className = 'zoom-overlay';
+      document.body.appendChild(overlay);
 
-                // 画面の中央（ありがとうの言葉が見える位置）まで自動スクロール
-                setTimeout(() => {
-                    const scrollX = (container.offsetWidth - window.innerWidth) / 2;
-                    const scrollY = (container.offsetHeight - window.innerHeight) / 2;
-                    overlay.scrollTo({
-                        left: scrollX,
-                        top: scrollY,
-                        behavior: 'auto'
-                    });
-                }, 50);
-            });
+      bannerArea.addEventListener('click', function() {
+        container.classList.add('pdf-banner-zoomed');
+        overlay.appendChild(container);
+        overlay.style.display = 'block';
 
-            // 背景タップ（または画像タップ）で元に戻す
-            overlay.addEventListener('click', function() {
-                bannerArea.appendChild(container); // 元の場所に戻す
-                container.classList.remove('pdf-banner-zoomed');
-                overlay.style.display = 'none';
-            });
+        setTimeout(() => {
+          const scrollX = (container.offsetWidth - window.innerWidth) / 2;
+          const scrollY = (container.offsetHeight - window.innerHeight) / 2;
+          overlay.scrollTo({
+            left: scrollX,
+            top: scrollY,
+            behavior: 'auto'
+          });
+        }, 50);
+      });
 
-        } catch (e) {
-            console.error("Banner Zoom-in Error:", e);
-        }
-        })();
-    </script>
+      overlay.addEventListener('click', function() {
+        bannerArea.appendChild(container);
+        container.classList.remove('pdf-banner-zoomed');
+        overlay.style.display = 'none';
+      });
 
-    </div>
+    } catch (e) {
+      console.error("Banner Zoom-in Error:", e);
+    }
+  })();
+</script>
 
 </body>
 </html>
